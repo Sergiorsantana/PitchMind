@@ -207,7 +207,7 @@ precision@5 do RAG fica igual nas duas opções, por isso o padrão continua sen
 
 ## Contribuidores
 
-- [@Sergiorsantana](https://github.com/Sergiorsantana): idealização, arquitetura e desenvolvimento
+- **Sérgio Santana** ([@Sergiorsantana](https://github.com/Sergiorsantana)): idealização, arquitetura e desenvolvimento
 
 Contribuições são bem-vindas: abra uma *issue* ou um *pull request*.
 
