@@ -1,0 +1,16 @@
+name: Bug
+description: Algo não funciona como esperado
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: O que aconteceu?
+      description: Comando executado, saída obtida e saída esperada.
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Ambiente
+      placeholder: "Python 3.12, Ubuntu 24.04, pitchmind 0.1.0"

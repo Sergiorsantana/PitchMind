@@ -1,5 +1,9 @@
 # ⚽ PitchMind: pergunte à partida
 
+[![ci](https://github.com/Sergiorsantana/PitchMind/actions/workflows/ci.yml/badge.svg)](https://github.com/Sergiorsantana/PitchMind/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 **ETL de tracking de futebol + RAG quantitativo verificado + identidade de camisas por fusão bayesiana com VLM.**
 
 Inspirado no modo *Radar* do [Roboflow Sports](https://github.com/roboflow/sports) e na pergunta
@@ -251,7 +255,7 @@ precision@5 do RAG fica igual nas duas opções, por isso o padrão continua sen
 
 - **Sérgio Santana** ([@Sergiorsantana](https://github.com/Sergiorsantana)): idealização, arquitetura e desenvolvimento
 
-Contribuições são bem-vindas: abra uma *issue* ou um *pull request*.
+Contribuições são bem-vindas: veja o [guia de contribuição](CONTRIBUTING.md) e abra uma *issue* ou um *pull request*.
 
 ## Créditos
 

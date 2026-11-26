@@ -1,0 +1,16 @@
+name: Ideia / melhoria
+description: Proponha uma nova funcionalidade ou experimento
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Ideia
+      description: O que você quer adicionar e por quê?
+    validations:
+      required: true
+  - type: textarea
+    id: metric
+    attributes:
+      label: Como medir?
+      description: Qual métrica ou benchmark mostra que a ideia funcionou?
