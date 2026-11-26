@@ -25,9 +25,9 @@ st.set_page_config(page_title="PitchMind", page_icon="⚽", layout="wide")
 
 
 @st.cache_resource(show_spinner="Rodando ETL (extract → transform → load)…")
-def build(seed: int, backend_name: str):
+def build(seed: int, backend_name: str, windowing: str = "fixed"):
     backend = get_backend(backend_name)
-    store, frames, rep = run_pipeline(backend=backend, seed=seed)
+    store, frames, rep = run_pipeline(backend=backend, seed=seed, windowing=windowing)
     return store, frames, rep, backend
 
 
@@ -37,9 +37,11 @@ with st.sidebar:
     seed = st.number_input("Seed da partida simulada", 0, 999, 7)
     backend_name = st.selectbox("Backend VLM/LLM", ["offline", "auto", "claude"],
                                 help="'claude' requer ANTHROPIC_API_KEY. 'offline' é determinístico.")
+    windowing = st.radio("Janelas", ["fixed", "possession"], horizontal=True,
+                         format_func=lambda x: "fixas 10 s" if x == "fixed" else "por posse")
     narrate = st.toggle("Narração por LLM (verificada)", value=False, disabled=backend_name == "offline")
 
-store, frames, rep, backend = build(int(seed), backend_name)
+store, frames, rep, backend = build(int(seed), backend_name, windowing)
 eng = AskEngine(store, backend, use_llm=backend.name != "offline")
 fps = len(frames) / (frames[-1].t + 1e-9)
 

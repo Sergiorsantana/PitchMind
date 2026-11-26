@@ -9,7 +9,7 @@ from pitchmind.extract.simulator import simulate_match
 from pitchmind.load.store import MatchStore
 from pitchmind.models import FrameState, Window
 from pitchmind.transform.events import describe, detect_events
-from pitchmind.transform.features import aggregate_windows
+from pitchmind.transform.features import aggregate_possession_windows, aggregate_windows
 from pitchmind.vlm.backends import OfflineBackend
 
 
@@ -23,7 +23,8 @@ class PipelineReport:
 
 def run_pipeline(frames: list[FrameState] | None = None, window_s: float = 10.0, backend=None,
                  db_path: str | Path = ":memory:", caption_every: int = 1,
-                 seed: int = 7, duration_s: float = 600) -> tuple[MatchStore, list[FrameState], PipelineReport]:
+                 seed: int = 7, duration_s: float = 600,
+                 windowing: str = "fixed") -> tuple[MatchStore, list[FrameState], PipelineReport]:
     rep = PipelineReport()
     backend = backend or OfflineBackend()
 
@@ -33,7 +34,10 @@ def run_pipeline(frames: list[FrameState] | None = None, window_s: float = 10.0,
     rep.n_frames = len(frames)
 
     t0 = time.perf_counter()
-    windows: list[Window] = aggregate_windows(frames, window_s)
+    if windowing == "possession":
+        windows: list[Window] = aggregate_possession_windows(frames)
+    else:
+        windows = aggregate_windows(frames, window_s)
     by_t = {round(f.t, 3): f for f in frames}
     for w in windows:
         w.events = detect_events(w)
@@ -53,6 +57,6 @@ def run_pipeline(frames: list[FrameState] | None = None, window_s: float = 10.0,
 
     t0 = time.perf_counter()
     store = MatchStore(db_path)
-    store.load(windows, {"window_s": window_s, "n_frames": len(frames), "backend": backend.name})
+    store.load(windows, {"window_s": window_s, "windowing": windowing, "n_frames": len(frames), "backend": backend.name})
     rep.timings["load"] = time.perf_counter() - t0
     return store, frames, rep

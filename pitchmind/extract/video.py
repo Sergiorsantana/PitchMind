@@ -68,18 +68,34 @@ class TeamClassifier:
 def read_video(path: str | Path, every_n: int = 5,
                model_name: str = "yolov8n.pt",
                homography: Optional[Homography] = None,
-               keep_images: bool = True) -> Iterator[FrameState]:
-    """Lê o vídeo e produz FrameStates. Requer `pip install ultralytics`."""
+               keep_images: bool = True,
+               field_model: Optional[str] = None,
+               track: bool = True,
+               tracks_out: Optional[dict] = None) -> Iterator[FrameState]:
+    """Lê o vídeo e produz FrameStates. Requer `pip install ultralytics`.
+
+    - `field_model`: pesos YOLOv8-pose dos 32 keypoints do campo -> calibração AUTOMÁTICA
+      por quadro (RANSAC + suavização + detecção de corte de câmera). Quadros sem
+      calibração confiável são descartados em vez de projetados errado.
+    - `track`: ByteTrack + ReID; se `tracks_out` for um dict, recebe {track_id: Track}
+      ao final (para alimentar o JerseyFuser com leituras OCR por trajetória).
+    """
     try:
         from ultralytics import YOLO
     except ImportError as e:  # pragma: no cover - depende de extra opcional
         raise SystemExit("Modo vídeo requer: pip install 'pitchmind[video]'") from e
+    from pitchmind.tracking.tracker import ByteTracker
 
     model = YOLO(model_name)
     cap = cv2.VideoCapture(str(path))
     fps = cap.get(cv2.CAP_PROP_FPS) or 25.0
     w, h = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     homography = homography or Homography(frame_size=(w, h))
+    calib = htrack = None
+    if field_model:
+        from pitchmind.calibration.keypoints import HomographyTracker, KeypointDetector
+        calib, htrack = KeypointDetector(field_model), HomographyTracker(frame_size=(w, h))
+    tracker = ByteTracker() if track else None
     teams = TeamClassifier()
     warmup: list[np.ndarray] = []
     idx = 0
@@ -93,7 +109,17 @@ def read_video(path: str | Path, every_n: int = 5,
         res = model(frame, verbose=False)[0]
         cls = res.boxes.cls.cpu().numpy().astype(int)
         xyxy = res.boxes.xyxy.cpu().numpy()
-        person, ball = xyxy[cls == 0], xyxy[cls == 32]  # COCO: 0=person, 32=sports ball
+        conf = res.boxes.conf.cpu().numpy()
+        person, pconf, ball = xyxy[cls == 0], conf[cls == 0], xyxy[cls == 32]  # COCO: 0=person, 32=ball
+        if tracker is not None:
+            active = tracker.update(person, pconf, frame)
+            person = np.array([t.box for t in active]).reshape(-1, 4)
+        if calib is not None:
+            H, reliable = htrack.update(calib(frame))
+            if H is None or not reliable:
+                idx += 1
+                continue  # close, replay ou corte sem campo: não projeta
+            homography = Homography(H)
         feats = jersey_features(frame, person)
         if teams.km is None:
             warmup.append(feats)
@@ -112,3 +138,5 @@ def read_video(path: str | Path, every_n: int = 5,
                          ball=ball_pt, image=frame if keep_images else None)
         idx += 1
     cap.release()
+    if tracker is not None and tracks_out is not None:
+        tracks_out.update({t.track_id: t for t in tracker.all_tracks()})
