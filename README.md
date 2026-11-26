@@ -15,6 +15,21 @@ controle de campo em tempo real e eventos táticos detectados automaticamente
 
 ![Perguntar](docs/img/ask.png)
 
+## Demonstrações
+
+Cada modo do pipeline tem um vídeo próprio. **Clique na prévia para abrir o MP4.**
+
+| Rastreamento (ByteTrack + ReID) | Calibração automática da câmera |
+|:---:|:---:|
+| [![Rastreamento](docs/media/tracking.gif)](docs/media/tracking.mp4) | [![Calibração](docs/media/calibration.gif)](docs/media/calibration.mp4) |
+| IDs estáveis em oclusões e cruzamentos; detecções de baixa confiança (tracejado) recuperadas no 2º estágio | 32 keypoints do campo + RANSAC; descarta ids errados (vermelho), detecta o **corte de câmera** e mostra no minimapa o que a câmera vê |
+| **Identidade: o 18 que vira 8** | **Radar ao vivo** |
+| [![Camisas](docs/media/jersey.gif)](docs/media/jersey.mp4) | [![Radar](docs/img/live.gif)](docs/media/radar.mp4) |
+| O voto por maioria erra (8); a fusão bayesiana começa em "?" e só afirma **18** quando a evidência é suficiente | Posições, compactação, métricas e controle de campo em tempo real, com eventos táticos detectados |
+
+> Os vídeos usam cenas **sintéticas** geradas pelo próprio projeto, sem imagens de transmissão. Para
+> gerá-los de novo: `pitchmind demos`.
+
 ## O que tem de novo
 
 | # | Ideia | Por que importa |
@@ -83,7 +98,7 @@ pitchmind/
 ├── identity/  jersey.py (fusão bayesiana) · ocr.py (PARSeq, qualidade do recorte)
 ├── benchmarks/ soccernet.py (Jersey Number Recognition + exportação GSR)
 ├── vlm/       backends.py (Claude com visão + saída JSON estruturada | offline)
-├── render/    radar.py · animate.py (GIF do radar ao vivo)
+├── render/    radar.py · animate.py (radar ao vivo) · demos.py (vídeos de cada modo)
 └── cli.py     app/streamlit_app.py
 ```
 
@@ -107,6 +122,10 @@ streamlit run app/streamlit_app.py
 
 ```bash
 pitchmind --backend offline animate --start 240 --seconds 80 --out docs/img/live.gif
+```
+
+```bash
+pitchmind demos --out docs/media
 ```
 
 Perguntas que funcionam: *"Quando o time A fez pressão alta? top 3"*, *"Momentos em que o time B ficou

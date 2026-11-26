@@ -149,6 +149,8 @@ def main(argv=None):
     an.add_argument("--start", type=float, default=240.0)
     an.add_argument("--seconds", type=float, default=80.0)
     an.add_argument("--out", default="docs/img/live.gif")
+    dm = sub.add_parser("demos", help="gera os vídeos de demonstração (MP4 + GIF) de cada modo")
+    dm.add_argument("--out", default="docs/media")
     v = sub.add_parser("video")
     v.add_argument("path")
     v.add_argument("--homography")
@@ -161,6 +163,12 @@ def main(argv=None):
     p.add_argument("--windowing", default="fixed", choices=["fixed", "possession"],
                    help="janelas fixas de 10 s ou adaptativas por posse")
     args = p.parse_args(argv)
+
+    if args.cmd == "demos":
+        from pitchmind.render.demos import make_all
+        for path in make_all(args.out):
+            print(f"  {path}  ({path.stat().st_size / 1e6:.1f} MB)")
+        return
 
     backend = get_backend(args.backend)
     if args.cmd == "video":

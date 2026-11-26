@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from collections import Counter, defaultdict
 
+import cv2
 import numpy as np
 
 TEAM_BGR = {"A": (200, 90, 40), "B": (40, 50, 210)}
@@ -40,9 +41,16 @@ def simulate_tracking(n_players: int = 14, n_frames: int = 300, size=(640, 360),
             img = np.full((H, W, 3), (60, 140, 60), np.uint8)
             for i in np.argsort(pos[:, 1]):  # desenha de trás para frente
                 x1, y1, x2, y2 = gt[i].astype(int)
+                bh, bw = y2 - y1, x2 - x1
                 col = np.clip(np.array(TEAM_BGR[teams[i]]) + shade[i], 0, 255).tolist()
-                img[max(y1, 0):y1 + (y2 - y1) // 2, max(x1, 0):x2] = col           # camisa
-                img[y1 + (y2 - y1) // 2:y2, max(x1, 0):x2] = (30, 30, 30)          # calção
+                cx = (x1 + x2) // 2
+                cv2.circle(img, (cx, y1 + bh // 9), max(bh // 9, 2), (150, 180, 220), -1, cv2.LINE_AA)  # cabeça
+                cv2.rectangle(img, (x1, y1 + bh // 5), (x2, y1 + int(bh * 0.55)), col, -1)        # camisa
+                cv2.rectangle(img, (x1 + 1, y1 + int(bh * 0.55)), (x2 - 1, y1 + int(bh * 0.72)), (30, 30, 30), -1)
+                leg = max(bw // 5, 2)
+                swing = int(3 * np.sin(f * 0.5 + i))
+                cv2.line(img, (cx - leg, y1 + int(bh * 0.72)), (cx - leg - swing, y2), (150, 180, 220), leg)
+                cv2.line(img, (cx + leg, y1 + int(bh * 0.72)), (cx + leg + swing, y2), (150, 180, 220), leg)
 
         boxes, scores, ids = [], [], []
         start = rng.random(n_players) < occl_rate / 6
