@@ -17,18 +17,35 @@ controle de campo em tempo real e eventos táticos detectados automaticamente
 
 ## Demonstrações
 
-Cada modo do pipeline tem um vídeo próprio. **Clique na prévia para abrir o MP4.**
+Cada modo do pipeline tem um vídeo próprio. Os vídeos usam cenas **sintéticas** geradas pelo próprio
+projeto, sem imagens de transmissão. Para gerá-los de novo, rode `pitchmind demos`.
 
-| Rastreamento (ByteTrack + ReID) | Calibração automática da câmera |
-|:---:|:---:|
-| [![Rastreamento](docs/media/tracking.gif)](docs/media/tracking.mp4) | [![Calibração](docs/media/calibration.gif)](docs/media/calibration.mp4) |
-| IDs estáveis em oclusões e cruzamentos; detecções de baixa confiança (tracejado) recuperadas no 2º estágio | 32 keypoints do campo + RANSAC; descarta ids errados (vermelho), detecta o **corte de câmera** e mostra no minimapa o que a câmera vê |
-| **Identidade: o 18 que vira 8** | **Radar ao vivo** |
-| [![Camisas](docs/media/jersey.gif)](docs/media/jersey.mp4) | [![Radar](docs/img/live.gif)](docs/media/radar.mp4) |
-| O voto por maioria erra (8); a fusão bayesiana começa em "?" e só afirma **18** quando a evidência é suficiente | Posições, compactação, métricas e controle de campo em tempo real, com eventos táticos detectados |
+### 1. Rastreamento (ByteTrack + ReID)
 
-> Os vídeos usam cenas **sintéticas** geradas pelo próprio projeto, sem imagens de transmissão. Para
-> gerá-los de novo: `pitchmind demos`.
+Os IDs continuam estáveis em oclusões e cruzamentos. As detecções de baixa confiança (tracejado) são
+recuperadas no segundo estágio.
+
+https://github.com/user-attachments/assets/ed70dffc-cd14-492f-a364-e1ed0e6600d4
+
+### 2. Calibração automática da câmera
+
+O modelo usa os 32 keypoints do campo com RANSAC. Keypoints com id errado (vermelho) são descartados, o
+**corte de câmera** é detectado e o minimapa mostra o que a câmera está vendo.
+
+https://github.com/user-attachments/assets/2c2c02f1-9071-48bb-8eb3-eeda585a048d
+
+### 3. Identidade: o 18 que vira 8
+
+O voto por maioria erra e fica no 8. A fusão bayesiana começa em "?" e só afirma **18** quando a
+evidência é suficiente.
+
+https://github.com/user-attachments/assets/3b175b3e-e9fd-4941-9a1a-8b88aefc0da4
+
+### 4. Radar ao vivo
+
+Posições, compactação, métricas e controle de campo em tempo real, com eventos táticos detectados.
+
+https://github.com/user-attachments/assets/c2478a1b-2504-4176-a1df-fe4163cca184
 
 ## O que tem de novo
 
