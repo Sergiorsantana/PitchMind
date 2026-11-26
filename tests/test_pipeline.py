@@ -93,3 +93,10 @@ def test_global_assignment_no_duplicate_numbers():
     ids = f.assign([f.identify(1, "B", strong), f.identify(2, "B", weak)])
     nums = [i.number for i in ids if i.number != UNKNOWN]
     assert len(nums) == len(set(nums)) and ids[0].number == "8"
+
+
+@pytest.mark.parametrize("seed", [1, 2])
+def test_build_up_not_confused_with_attack_vs_low_block(seed):
+    s, _, _ = run_pipeline(seed=seed, duration_s=600)
+    res = evaluate(s, AskEngine(s))
+    assert res["b_build_up"] >= 0.8 and res["mean"] >= 0.9

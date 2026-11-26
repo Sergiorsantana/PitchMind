@@ -11,7 +11,8 @@ EVENT_DOCS = {
     "{t}_high_press": "time {t} sem a bola, bloco alto (>= 52 m), linha defensiva >= 38 m e >= 2.5 jogadores a menos de 10 m da bola",
     "{t}_low_block": "time {t} sem a bola, bloco baixo (<= 30 m) e mais compacto que o rival",
     "{t}_counter": "time {t} com a bola, bola rápida (>= 10 m/s)",
-    "{t}_build_up": "time {t} com a bola, circulação lenta (< 10 m/s) e mais espaçado que o rival",
+    "{t}_build_up": "time {t} com a bola, circulação lenta (< 10 m/s), mais espaçado que o rival e "
+                    "com a bola fora do terço final (field tilt < 50%) — senão é ataque posicional, não construção",
 }
 
 
@@ -27,7 +28,8 @@ def detect_events(w: Window) -> list[str]:
             ev.append(f"{t}_low_block")
         if poss > 60 and speed >= 10.0:
             ev.append(f"{t}_counter")
-        if poss > 60 and speed < 10.0 and m.get(f"{t}_compactness", 0) > m.get(f"{o}_compactness", 1e9):
+        if (poss > 60 and speed < 10.0 and m.get(f"{t}_compactness", 0) > m.get(f"{o}_compactness", 1e9)
+                and m.get(f"{t}_field_tilt", 0.0) < 50):
             ev.append(f"{t}_build_up")
     return ev
 

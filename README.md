@@ -63,10 +63,16 @@ https://github.com/user-attachments/assets/c2478a1b-2504-4176-a1df-fe4163cca184
 
 | fase | a_high_press | b_high_press | a_low_block | a_counter | a_build_up | b_build_up | **média** |
 |---|---|---|---|---|---|---|---|
-| P@5 | 1,00 | 1,00 | 1,00 | 1,00 | 1,00 | 0,60 | **0,93** |
+| P@5 | 1,00 | 1,00 | 1,00 | 1,00 | 1,00 | 1,00 | **1,00** |
 
-Esse resultado é da partida `--seed 7`. Nas seeds 1 e 2 a média cai para 0,83–0,87, sempre por causa de
-`b_build_up`: a regra de "construção do time B" ainda é fraca e é o ponto de melhoria mais claro do RAG.
+O resultado acima é da partida `--seed 7`. Na média de **10 partidas simuladas** (seeds 0–9), a P@5
+média é **0,953** (pior partida: 0,83). As fases mais difíceis continuam sendo as de construção
+(`b_build_up` 0,80, `a_build_up` 0,92).
+
+> Antes, a regra de construção também capturava o **ataque posicional contra bloco baixo**: o time está com a
+> bola, circulando devagar e mais espaçado nos dois casos. A diferença é *onde* a bola está. Exigir a bola
+> fora do terço final (field tilt < 50%) elevou a média de 10 partidas de 0,883 para 0,953, e `b_build_up`
+> de 0,42 para 0,80.
 
 **Identidade de camisas**, 400 trajetórias simuladas (metade em condição difícil):
 
